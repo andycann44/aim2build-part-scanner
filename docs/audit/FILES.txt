@@ -1,0 +1,14 @@
+backend/__init__.py
+backend/api/__init__.py
+backend/app.py
+backend/azure/__init__.py
+backend/catalog/__init__.py
+backend/image/__init__.py
+backend/models/__init__.py
+backend/r2/__init__.py
+backend/requirements.txt
+backend/routes/catalog.py
+backend/routes/scan.py
+backend/services/azure_metadata.py
+backend/services/r2_upload.py
+backend/workers/__init__.py

@@ -1,0 +1,11 @@
+backend
+backend/api
+backend/azure
+backend/catalog
+backend/image
+backend/models
+backend/r2
+backend/routes
+backend/services
+backend/uploads
+backend/workers
