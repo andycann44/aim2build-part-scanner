@@ -1,0 +1,157 @@
+# Python / venv
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.venv/
+venv/
+backend/venv/
+*.pyc
+
+# --- Rebrickable CSVs (never commit) ---
+backend/app/data/rebrickable/
+
+# SQLite & runtime JSON (not versioned)
+backend/app/data/*.db
+backend/app/data/*.db-shm
+backend/app/data/*.db-wal
+backend/app/data/my_sets.json
+backend/app/data/wishlist.json
+backend/app/data/*.db-*
+backend/app/data/*.sqlite
+backend/app/data/*.sqlite-*
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# OS / logs
+.DS_Store
+*.log
+frontend/.vite/
+backend_experiment_20251116_090044/app/data/lego_catalog.db
+csv/inventory_parts.csv
+backend_experiment_20251116_090044/app/data/lego_catalog.db
+csv/inventory_parts.csv
+
+# Local Python/Node stuff
+.venv/
+venv/
+__pycache__/
+node_modules/
+
+csv/
+
+# Python venv
+.venv/
+
+# Local user data (never commit)
+backend/app/data/*_user_*.json
+
+# Local databases
+backend/app/data/*.db
+backend/app/data/*.db-*
+
+# PDFs / scratch data
+instruction_pdfs/
+*.csv
+
+# local-only (never commit)
+frontend/.env.local
+backend/.env
+
+# local-only vite env
+frontend/.env.local
+frontend/.env.*.local
+
+# --- Aim2Build: local/runtime junk (never commit) ---
+*.bak
+backend/app/data/*user*.json
+backend/app/data/quarantine_legacy/
+backend/app/routers/searchold
+
+# Rebrickable exports (never commit)
+backend/app/data/rebrickable/*.csv
+backend/app/data/rebrickable/*.csv.gz
+backend/app/data/rebrickable/*.zip
+csv/
+
+# --- Aim2Build large runtime assets (never commit) ---
+backend/app/data/*.db
+backend/app/static/element_images/
+backend/app/static/element_images/**
+
+# Backend static is deploy-only (nginx serves it); never commit
+backend/app/static/
+backend/app/static/**
+debug_catalog_images.html
+
+# Local dev DB (do not commit)
+aim2build_app.db
+
+# --- local db / swap artifacts (never commit) ---
+backend/app/data/*.db
+backend/app/data/*.db-*
+backend/app/data/lego_catalog.db.*
+backend/app/data/<BACKUP_DB>
+backend/app/routers/search.py.bak_*
+
+# --- local db / swap artifacts (never commit) ---
+backend/app/data/*.db
+backend/app/data/*.db-*
+backend/app/data/lego_catalog.db.*
+backend/app/data/<BACKUP_DB>
+backend/app/routers/search.py.bak_*
+stickers/
+
+# ===== AIM2BUILD PROTECTION =====
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+dist/
+build/
+
+# Logs / temp
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Env
+.env
+.env.*
+!.env.example
+
+# SQLite runtime noise
+*.db-shm
+*.db-wal
+
+# NEVER commit databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Archives / audits
+a2b_archive/
+db_audit*.txt
+aim2build_repo_audit*/
+
+# generated mapping data
+backend/app/data/rebrickable_api_parts/
+frontend/src/data/backups/
+frontend/src/data/bricklinkPartMap.external.generated.json
+
+backend/app/data/*.bak_*
+backend/app/data/*.pre_*

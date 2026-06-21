@@ -1,0 +1,103 @@
+Aim2Build
+
+Aim2Build is a LEGO® inventory and buildability helper application.
+
+This repository contains:
+	•	Backend: FastAPI (auth, inventory, buildability, search)
+	•	Frontend: React + Vite
+	•	Deployment: nginx + systemd + uvicorn
+
+⸻
+
+⚠️ Password Reset / Auth – IMPORTANT DEPLOY NOTE
+
+If password reset emails point to the wrong domain (for example, prod links sent from staging), this is not a frontend bug.
+
+Check the backend public base URL
+
+On the server:
+
+sudo systemctl show aim2build-backend -p Environment | tr ' ' '\n' | rg AIM2BUILD_PUBLIC_BASE_URL
+
+Required values
+	•	Staging
+
+https://staging.aim2build.co.uk
+
+
+	•	Production
+
+https://aim2build.co.uk
+
+
+
+After changing the value
+
+sudo systemctl daemon-reload
+sudo systemctl restart aim2build-backend
+sudo systemctl restart nginx
+
+
+⸻
+
+Frontend API BASE RULE (LOCKED IN)
+
+The frontend must use same-origin in staging and production.
+
+Correct behaviour
+	•	Local development
+
+VITE_API_BASE=http://127.0.0.1:8000
+
+
+	•	Staging / Production
+	•	VITE_API_BASE must be unset
+	•	API calls go to /api/... on the same domain
+
+❌ Never do this
+	•	Do not hardcode 127.0.0.1:8000 in staging or prod builds
+	•	Do not edit files inside /var/www/aim2build
+
+⸻
+
+Deployment Rules (DO NOT BREAK)
+	•	/var/www/aim2build
+→ deploy output only (never edit manually)
+	•	Frontend source lives in:
+
+~/aim2build-app/frontend
+
+
+
+Safe staging deploy command
+
+unset VITE_API_BASE
+npm ci
+npm run build
+sudo rsync -a --delete ./dist/ /var/www/aim2build/
+sudo systemctl restart nginx
+
+
+⸻
+
+Auth Implementation Notes
+	•	Auth uses JWT (HS256) stored in localStorage
+	•	No cookies, no server-side sessions, no refresh tokens
+	•	/api/auth/me validates tokens
+	•	Any 401 from the API should:
+	•	remove the token from storage
+	•	redirect the user to /account
+
+⸻
+
+Known Gotchas
+	•	A brief 502 Bad Gateway during backend restart is normal
+	•	Password reset emails are sent by the backend (Resend / SMTP), not Cloudflare
+	•	systemd environment overrides always win over .env files
+
+⸻
+
+Status
+
+This file documents the known-good baseline for Aim2Build auth and deployment.
+Do not deviate without understanding the consequences.
