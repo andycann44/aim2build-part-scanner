@@ -13,8 +13,8 @@ export default function App() {
   const device = useCameraDevice('back');
   const [photos, setPhotos] = useState<string[]>([]);
   const [zoom, setZoom] = useState(1);
-  const [status, setStatus] = useState('Camera starting...');
-  const [cameraReady, setCameraReady] = useState(false);
+  const [status, setStatus] = useState('Camera ready - test capture');
+  const [cameraReady, setCameraReady] = useState(true);
 
   useEffect(() => {
     if (!hasPermission) requestPermission();
