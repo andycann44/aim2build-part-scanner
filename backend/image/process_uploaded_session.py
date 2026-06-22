@@ -2,7 +2,7 @@ from pathlib import Path
 from PIL import Image
 
 from backend.image.remove_background import remove_background_file
-from backend.image.analysis_images import create_analysis_image, create_edge_image
+from backend.image.analysis_images import create_analysis_image, create_analysis_high_image, create_edge_image
 
 
 def process_session(session_dir: str) -> dict:
@@ -21,6 +21,9 @@ def process_session(session_dir: str) -> dict:
         analysis_path = out / img_path.name.replace("original_", "analysis_").rsplit(".", 1)[0]
         analysis_path = analysis_path.with_suffix(".png")
 
+        analysis_high_path = out / img_path.name.replace("original_", "analysis_high_").rsplit(".", 1)[0]
+        analysis_high_path = analysis_high_path.with_suffix(".png")
+
         edge_path = out / img_path.name.replace("original_", "edge_").rsplit(".", 1)[0]
         edge_path = edge_path.with_suffix(".png")
 
@@ -28,7 +31,8 @@ def process_session(session_dir: str) -> dict:
         cutout_path = cutout_path.with_suffix(".png")
 
         create_analysis_image(img_path, analysis_path)
-        create_edge_image(analysis_path, edge_path)
+        create_analysis_high_image(img_path, analysis_high_path)
+        create_edge_image(analysis_high_path, edge_path)
         remove_background_file(img_path, cutout_path)
 
         img = Image.open(cutout_path).convert("RGBA")
@@ -49,6 +53,7 @@ def process_session(session_dir: str) -> dict:
         made.append({
             "original": str(img_path),
             "analysis": str(analysis_path),
+            "analysis_high": str(analysis_high_path),
             "edge": str(edge_path),
             "cutout": str(cutout_path),
             "crop": str(crop_path),
