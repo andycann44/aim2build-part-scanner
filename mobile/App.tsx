@@ -11,6 +11,8 @@ export default function App() {
   const [status, setStatus] = useState('');
   const [zoom, setZoom] = useState(0);
   const [focusPoint, setFocusPoint] = useState<{ x: number; y: number } | null>(null);
+  const [zoom, setZoom] = useState(0);
+  const [focusPoint, setFocusPoint] = useState<{ x: number; y: number } | null>(null);
 
   if (!permission) return <View />;
 
