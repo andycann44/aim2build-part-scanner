@@ -76,3 +76,11 @@ async def upload_scan(file: UploadFile = File(...)):
         "url": f"/uploads/{filename}",
         "size": len(content),
     }
+
+
+@app.get("/api/recognize/{session_id}")
+def recognize_scan_session(session_id: str):
+    from backend.recognition.simple_recognizer import recognize_session
+
+    processed_dir = Path("backend/processed") / session_id
+    return recognize_session(str(processed_dir))
