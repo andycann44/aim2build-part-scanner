@@ -4,7 +4,7 @@ import Slider from '@react-native-community/slider';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 
 
-function GridOverlay() {
+function GridOverlay({ guideSize }: { guideSize: 2 | 4 | 6 | 8 }) {
   const lines = Array.from({ length: 13 });
 
   return (
@@ -40,24 +40,13 @@ function GridOverlay() {
       <View
         style={{
           position: 'absolute',
-          left: '33.333%',
-          top: '33.333%',
-          width: '33.333%',
-          height: '33.333%',
-          borderWidth: 2,
-          borderColor: 'rgba(255,230,0,0.95)',
-        }}
-      />
-
-      <View
-        style={{
-          position: 'absolute',
-          left: '41.666%',
-          top: '41.666%',
-          width: '16.666%',
-          height: '16.666%',
-          borderWidth: 2,
-          borderColor: 'rgba(0,255,120,0.95)',
+          left: `${((12 - guideSize) / 2 / 12) * 100}%`,
+          top: `${((12 - guideSize) / 2 / 12) * 100}%`,
+          width: `${(guideSize / 12) * 100}%`,
+          height: `${(guideSize / 12) * 100}%`,
+          borderWidth: 3,
+          borderColor: guideSize <= 2 ? 'rgba(0,255,120,0.95)' : 'rgba(255,230,0,0.95)',
+          backgroundColor: 'rgba(255,255,255,0.04)',
         }}
       />
 
@@ -73,7 +62,7 @@ function GridOverlay() {
           fontSize: 12,
         }}
       >
-        12x12 grid | yellow 4x4 | green 2x2
+        12x12 grid | target guide
       </Text>
     </View>
   );
@@ -88,6 +77,7 @@ export default function App() {
   const [status, setStatus] = useState('Ready');
   const [zoom, setZoom] = useState(0);
   const [flash, setFlash] = useState<'off' | 'on'>('off');
+  const [guideSize, setGuideSize] = useState<2 | 4 | 6 | 8>(4);
 
   if (!permission) return null;
 
@@ -161,7 +151,7 @@ export default function App() {
           zoom={zoom}
           flash={flash}
         />
-        <GridOverlay />
+        <GridOverlay guideSize={guideSize} />
       </View>
 
       <Text style={{ color: 'white', textAlign: 'center' }}>
@@ -180,6 +170,17 @@ export default function App() {
         <Button title="2x" onPress={() => setZoom(0.25)} />
         <Button title="3x" onPress={() => setZoom(0.45)} />
         <Button title="Auto Fit" onPress={() => setZoom(0.35)} />
+      </View>
+
+      <Text style={{ color: 'white', textAlign: 'center', paddingTop: 6 }}>
+        Target guide: {guideSize}x{guideSize} studs
+      </Text>
+
+      <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+        <Button title="2x2" onPress={() => setGuideSize(2)} />
+        <Button title="4x4" onPress={() => setGuideSize(4)} />
+        <Button title="6x6" onPress={() => setGuideSize(6)} />
+        <Button title="8x8" onPress={() => setGuideSize(8)} />
       </View>
 
       <Button
