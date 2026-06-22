@@ -27,6 +27,40 @@ def health():
     return {"ok": True, "service": "aim2build-part-scanner"}
 
 
+
+@app.post("/api/sessions")
+async def create_scan_session(files: list[UploadFile] = File(...)):
+    session_id = f"session_{uuid4().hex}"
+    session_dir = UPLOAD_DIR / session_id
+    session_dir.mkdir(parents=True, exist_ok=True)
+
+    saved = []
+    for index, file in enumerate(files, start=1):
+        suffix = Path(file.filename or f"photo_{index}.jpg").suffix.lower() or ".jpg"
+        filename = f"original_{index}{suffix}"
+        out_path = session_dir / filename
+
+        content = await file.read()
+        out_path.write_bytes(content)
+
+        saved.append({
+            "index": index,
+            "filename": filename,
+            "local_path": str(out_path),
+            "url": f"/uploads/{session_id}/{filename}",
+            "size": len(content),
+        })
+
+    return {
+        "ok": True,
+        "session_id": session_id,
+        "color_id": 0,
+        "photo_count": len(saved),
+        "status": "uploaded_local",
+        "photos": saved,
+    }
+
+
 @app.post("/upload")
 async def upload_scan(file: UploadFile = File(...)):
     suffix = Path(file.filename or "scan.jpg").suffix.lower() or ".jpg"
