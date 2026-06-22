@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { Button, Image, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { Button, Image, Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import Slider from '@react-native-community/slider';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 
 export default function App() {
@@ -8,6 +9,8 @@ export default function App() {
   const [photos, setPhotos] = useState<string[]>([]);
   const [flash, setFlash] = useState<'off' | 'on'>('off');
   const [status, setStatus] = useState('');
+  const [zoom, setZoom] = useState(0);
+  const [focusPoint, setFocusPoint] = useState<{ x: number; y: number } | null>(null);
 
   if (!permission) return <View />;
 
@@ -43,11 +46,45 @@ export default function App() {
         color_id 0 / Black | Shots: {photos.length}/3 minimum
       </Text>
 
-      <CameraView
-        ref={cameraRef}
+      <Pressable
         style={{ flex: 1 }}
-        facing="back"
-        flash={flash}
+        onPress={(e) => {
+          setFocusPoint({ x: e.nativeEvent.locationX, y: e.nativeEvent.locationY });
+          setStatus('Focus point set - hold steady');
+        }}
+      >
+        <CameraView
+          ref={cameraRef}
+          style={{ flex: 1 }}
+          facing="back"
+          flash={flash}
+          zoom={zoom}
+        />
+        {focusPoint && (
+          <View
+            pointerEvents="none"
+            style={{
+              position: 'absolute',
+              left: focusPoint.x - 25,
+              top: focusPoint.y - 25,
+              width: 50,
+              height: 50,
+              borderWidth: 2,
+              borderColor: 'yellow',
+              borderRadius: 25,
+            }}
+          />
+        )}
+      </Pressable>
+
+      <Text style={{ color: 'white', textAlign: 'center' }}>
+        Zoom: {Math.round(zoom * 100)}%
+      </Text>
+      <Slider
+        minimumValue={0}
+        maximumValue={0.7}
+        value={zoom}
+        onValueChange={setZoom}
       />
 
       <Button
