@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import * as Device from 'expo-device';
 import { Button, Image, Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { CameraView, useCameraPermissions } from 'expo-camera';
@@ -41,7 +42,7 @@ export default function App() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#111' }}>
       <Text style={{ color: 'white', textAlign: 'center', padding: 10, fontWeight: '700' }}>
-        Aim2Build Black Part Scanner
+        Aim2Build Black Part Scanner\n{Device.modelName || 'Unknown device'}
       </Text>
 
       <Text style={{ color: 'white', textAlign: 'center', paddingBottom: 8 }}>
@@ -61,6 +62,7 @@ export default function App() {
           facing="back"
           flash={flash}
           zoom={zoom}
+          focusMode="off"
         />
         {focusPoint && (
           <View
