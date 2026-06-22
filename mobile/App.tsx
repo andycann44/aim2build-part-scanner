@@ -7,6 +7,7 @@ export default function App() {
   const [permission, requestPermission] = useCameraPermissions();
   const [photos, setPhotos] = useState<string[]>([]);
   const [flash, setFlash] = useState<'off' | 'on'>('off');
+  const [status, setStatus] = useState('');
 
   if (!permission) return <View />;
 
@@ -62,10 +63,34 @@ export default function App() {
       <Button
         title={minimumReady ? 'Finish Session - Ready' : 'Finish Session - Need 3 Photos'}
         disabled={!minimumReady}
-        onPress={() => alert(`Session ready with ${photos.length} photos`)}
+        onPress={async () => {
+          setStatus('Uploading...');
+          const form = new FormData();
+
+          photos.forEach((uri, index) => {
+            form.append('files', {
+              uri,
+              name: `photo_${index + 1}.jpg`,
+              type: 'image/jpeg',
+            } as any);
+          });
+
+          const res = await fetch('http://192.168.0.230:8787/api/sessions', {
+            method: 'POST',
+            body: form,
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+
+          const json = await res.json();
+          setStatus(`Uploaded: ${json.session_id}`);
+        }}
       />
 
       <Button title="Reset Session" onPress={resetSession} />
+
+      <Text style={{ color: 'white', textAlign: 'center', padding: 8 }}>{status}</Text>
 
       <ScrollView horizontal style={{ maxHeight: 90, padding: 6 }}>
         {photos.map((uri, index) => (
