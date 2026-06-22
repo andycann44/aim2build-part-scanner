@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button, Image, SafeAreaView, ScrollView, Text, View } from 'react-native';
-import Slider from '@react-native-community/slider';
+import * as ImagePicker from 'expo-image-picker';
 import {
   Camera,
   useCameraDevice,
@@ -8,17 +8,12 @@ import {
 } from 'react-native-vision-camera';
 
 export default function App() {
-  const cameraRef = useRef<React.ElementRef<typeof Camera>>(null);
+  const cameraRef = useRef<any>(null);
   const { hasPermission, requestPermission } = useCameraPermission();
   const device = useCameraDevice('back');
-  const [photos, setPhotos] = useState<string[]>([]);
-  const [zoom, setZoom] = useState(1);
-  const [status, setStatus] = useState('Camera ready - test capture');
-  const [cameraReady, setCameraReady] = useState(true);
 
-  useEffect(() => {
-    if (!hasPermission) requestPermission();
-  }, [hasPermission]);
+  const [photos, setPhotos] = useState<string[]>([]);
+  const [status, setStatus] = useState('Ready');
 
   if (!hasPermission) {
     return (
@@ -41,33 +36,26 @@ export default function App() {
 
   async function takePhoto() {
     try {
-      if (!cameraRef.current) {
-        setStatus('Camera not ready: ref missing');
-        return;
-      }
+      setStatus('Opening camera...');
 
-      if (!cameraReady) {
-        setStatus('Camera not ready yet');
-        return;
-      }
-
-      setStatus('Taking photo...');
-
-      const photo = await cameraRef.current.takePhoto({
-        flash: 'off',
-        enableShutterSound: false,
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        allowsEditing: false,
+        exif: true,
       });
 
-      if (!photo?.path) {
-        setStatus('No photo path returned');
+      if (result.canceled || !result.assets?.[0]?.uri) {
+        setStatus('Camera cancelled');
         return;
       }
 
-      const uri = photo.path.startsWith('file://') ? photo.path : `file://${photo.path}`;
+      const uri = result.assets[0].uri;
       setPhotos((prev) => [...prev, uri]);
-      setStatus(`Shot saved: ${photos.length + 1}`);
+      setStatus(`Saved shot ${photos.length + 1}`);
     } catch (err: any) {
-      setStatus(`Camera error: ${err?.message || String(err)}`);
+      setStatus(`CAPTURE ERROR: ${err?.message || String(err)}`);
+      console.log('CAPTURE ERROR', err);
     }
   }
 
@@ -97,43 +85,26 @@ export default function App() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#111' }}>
-      <Text style={{ color: 'white', textAlign: 'center', padding: 10, fontWeight: '700' }}>
+      <Text style={{ color: 'white', textAlign: 'center', padding: 8, fontWeight: '700' }}>
         Aim2Build Part Scanner
       </Text>
 
-      <Text style={{ color: 'white', textAlign: 'center', paddingBottom: 8 }}>
-        Black / color_id 0 | Shots: {photos.length}/3 minimum
+      <Text style={{ color: 'white', textAlign: 'center', paddingBottom: 6 }}>
+        Black / color_id 0 | Shots: {photos.length}/3
       </Text>
 
-      <Camera
-        ref={cameraRef}
-        style={{ flex: 1 }}
-        device={device}
-        isActive={true}
-        zoom={zoom}
-      />
-
-      <Text style={{ color: 'white', textAlign: 'center' }}>
-        Zoom: {zoom.toFixed(1)}x | Min {device.minZoom.toFixed(1)} / Max {Math.min(device.maxZoom, 6).toFixed(1)}
-      </Text>
-
-      <Slider
-        minimumValue={device.minZoom}
-        maximumValue={Math.min(device.maxZoom, 6)}
-        value={zoom}
-        onValueChange={setZoom}
-      />
-
-      <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-        <Button title="1x" onPress={() => setZoom(Math.max(device.minZoom, 1))} />
-        <Button title="2x" onPress={() => setZoom(Math.min(Math.max(device.minZoom, 2), Math.min(device.maxZoom, 6)))} />
-        <Button title="3x" onPress={() => setZoom(Math.min(Math.max(device.minZoom, 3), Math.min(device.maxZoom, 6)))} />
+      <View style={{ flex: 1 }}>
+        <Camera
+          ref={cameraRef}
+          style={{ flex: 1 }}
+          device={device}
+          isActive={true}
+        />
       </View>
 
       <Button
         title={photos.length < 3 ? `Take Shot ${photos.length + 1}/3` : 'Add More Shot'}
         onPress={takePhoto}
-        disabled={!cameraReady}
       />
 
       <Button
