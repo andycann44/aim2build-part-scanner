@@ -87,7 +87,7 @@ export default function App() {
   const [status, setStatus] = useState('Ready');
   const [zoom, setZoom] = useState(0);
   const [flash, setFlash] = useState<'off' | 'on'>('off');
-  const [guideSize, setGuideSize] = useState<2 | 4 | 6 | 8>(4);
+  const guideSize: 2 | 4 | 6 | 8 = 4;
 
   if (!permission) return null;
 
@@ -182,16 +182,9 @@ export default function App() {
         <Button title="Auto Fit" onPress={() => setZoom(0.35)} />
       </View>
 
-      <Text style={{ color: 'white', textAlign: 'center', paddingTop: 6 }}>
-        Target guide: {guideSize}x{guideSize} studs
+      <Text style={{ color: 'white', textAlign: 'center', padding: 6 }}>
+        Auto Fit: move closer until the part fills the square grid
       </Text>
-
-      <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-        <Button title="2x2" onPress={() => setGuideSize(2)} />
-        <Button title="4x4" onPress={() => setGuideSize(4)} />
-        <Button title="6x6" onPress={() => setGuideSize(6)} />
-        <Button title="8x8" onPress={() => setGuideSize(8)} />
-      </View>
 
       <Button
         title={`Flash: ${flash.toUpperCase()}`}
