@@ -8,12 +8,13 @@ import {
 } from 'react-native-vision-camera';
 
 export default function App() {
-  const cameraRef = useRef<any>(null);
+  const cameraRef = useRef<React.ElementRef<typeof Camera>>(null);
   const { hasPermission, requestPermission } = useCameraPermission();
   const device = useCameraDevice('back');
   const [photos, setPhotos] = useState<string[]>([]);
   const [zoom, setZoom] = useState(1);
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState('Camera starting...');
+  const [cameraReady, setCameraReady] = useState(false);
 
   useEffect(() => {
     if (!hasPermission) requestPermission();
@@ -40,8 +41,19 @@ export default function App() {
 
   async function takePhoto() {
     try {
+      if (!cameraRef.current) {
+        setStatus('Camera not ready: ref missing');
+        return;
+      }
+
+      if (!cameraReady) {
+        setStatus('Camera not ready yet');
+        return;
+      }
+
       setStatus('Taking photo...');
-      const photo = await cameraRef.current?.takePhoto({
+
+      const photo = await cameraRef.current.takePhoto({
         flash: 'off',
         enableShutterSound: false,
       });
@@ -121,6 +133,7 @@ export default function App() {
       <Button
         title={photos.length < 3 ? `Take Shot ${photos.length + 1}/3` : 'Add More Shot'}
         onPress={takePhoto}
+        disabled={!cameraReady}
       />
 
       <Button
