@@ -7,6 +7,83 @@ import {
   useCameraPermission,
 } from 'react-native-vision-camera';
 
+
+function GridOverlay() {
+  const lines = Array.from({ length: 13 });
+
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', inset: 0 }}>
+      {lines.map((_, i) => (
+        <View
+          key={`v-${i}`}
+          style={{
+            position: 'absolute',
+            left: `${(i / 12) * 100}%`,
+            top: 0,
+            bottom: 0,
+            width: i === 0 || i === 12 ? 2 : 1,
+            backgroundColor: 'rgba(255,255,255,0.28)',
+          }}
+        />
+      ))}
+
+      {lines.map((_, i) => (
+        <View
+          key={`h-${i}`}
+          style={{
+            position: 'absolute',
+            top: `${(i / 12) * 100}%`,
+            left: 0,
+            right: 0,
+            height: i === 0 || i === 12 ? 2 : 1,
+            backgroundColor: 'rgba(255,255,255,0.28)',
+          }}
+        />
+      ))}
+
+      <View
+        style={{
+          position: 'absolute',
+          left: '33.333%',
+          top: '33.333%',
+          width: '33.333%',
+          height: '33.333%',
+          borderWidth: 2,
+          borderColor: 'rgba(255,230,0,0.95)',
+        }}
+      />
+
+      <View
+        style={{
+          position: 'absolute',
+          left: '41.666%',
+          top: '41.666%',
+          width: '16.666%',
+          height: '16.666%',
+          borderWidth: 2,
+          borderColor: 'rgba(0,255,120,0.95)',
+        }}
+      />
+
+      <Text
+        style={{
+          position: 'absolute',
+          left: 8,
+          bottom: 8,
+          color: 'white',
+          backgroundColor: 'rgba(0,0,0,0.55)',
+          padding: 6,
+          borderRadius: 6,
+          fontSize: 12,
+        }}
+      >
+        12x12 grid | yellow 4x4 | green 2x2
+      </Text>
+    </View>
+  );
+}
+
+
 export default function App() {
   const cameraRef = useRef<any>(null);
   const { hasPermission, requestPermission } = useCameraPermission();
@@ -100,6 +177,7 @@ export default function App() {
           device={device}
           isActive={true}
         />
+        <GridOverlay />
       </View>
 
       <Button
