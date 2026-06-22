@@ -8,7 +8,17 @@ function GridOverlay({ guideSize }: { guideSize: 2 | 4 | 6 | 8 }) {
   const lines = Array.from({ length: 13 });
 
   return (
-    <View pointerEvents="none" style={{ position: 'absolute', inset: 0 }}>
+    <View
+      pointerEvents="none"
+      style={{
+        position: 'absolute',
+        left: '50%',
+        top: '50%',
+        width: '92%',
+        aspectRatio: 1,
+        transform: [{ translateX: '-50%' }, { translateY: '-50%' }],
+      }}
+    >
       {lines.map((_, i) => (
         <View
           key={`v-${i}`}
