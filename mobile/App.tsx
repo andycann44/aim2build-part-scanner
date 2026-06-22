@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { Button, Image, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import Slider from '@react-native-community/slider';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 
 
@@ -85,6 +86,8 @@ export default function App() {
 
   const [photos, setPhotos] = useState<string[]>([]);
   const [status, setStatus] = useState('Ready');
+  const [zoom, setZoom] = useState(0);
+  const [flash, setFlash] = useState<'off' | 'on'>('off');
 
   if (!permission) return null;
 
@@ -155,9 +158,34 @@ export default function App() {
           ref={cameraRef}
           style={{ flex: 1 }}
           facing="back"
+          zoom={zoom}
+          flash={flash}
         />
         <GridOverlay />
       </View>
+
+      <Text style={{ color: 'white', textAlign: 'center' }}>
+        Zoom: {Math.round(zoom * 100)}%
+      </Text>
+
+      <Slider
+        minimumValue={0}
+        maximumValue={0.8}
+        value={zoom}
+        onValueChange={setZoom}
+      />
+
+      <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+        <Button title="1x" onPress={() => setZoom(0)} />
+        <Button title="2x" onPress={() => setZoom(0.25)} />
+        <Button title="3x" onPress={() => setZoom(0.45)} />
+        <Button title="Auto Fit" onPress={() => setZoom(0.35)} />
+      </View>
+
+      <Button
+        title={`Flash: ${flash.toUpperCase()}`}
+        onPress={() => setFlash(flash === 'off' ? 'on' : 'off')}
+      />
 
       <Button
         title={photos.length < 3 ? `Take Shot ${photos.length + 1}/3` : 'Add More Shot'}
