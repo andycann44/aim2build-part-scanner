@@ -39,13 +39,23 @@ export default function App() {
   }
 
   async function takePhoto() {
-    const photo = await cameraRef.current?.takePhoto({
-      flash: 'auto',
-      enableShutterSound: false,
-    });
+    try {
+      setStatus('Taking photo...');
+      const photo = await cameraRef.current?.takePhoto({
+        flash: 'off',
+        enableShutterSound: false,
+      });
 
-    if (photo?.path) {
-      setPhotos((prev) => [...prev, `file://${photo.path}`]);
+      if (!photo?.path) {
+        setStatus('No photo path returned');
+        return;
+      }
+
+      const uri = photo.path.startsWith('file://') ? photo.path : `file://${photo.path}`;
+      setPhotos((prev) => [...prev, uri]);
+      setStatus(`Shot saved: ${photos.length + 1}`);
+    } catch (err: any) {
+      setStatus(`Camera error: ${err?.message || String(err)}`);
     }
   }
 
@@ -92,7 +102,7 @@ export default function App() {
       />
 
       <Text style={{ color: 'white', textAlign: 'center' }}>
-        Zoom: {zoom.toFixed(1)}x
+        Zoom: {zoom.toFixed(1)}x | Min {device.minZoom.toFixed(1)} / Max {Math.min(device.maxZoom, 6).toFixed(1)}
       </Text>
 
       <Slider
@@ -101,6 +111,12 @@ export default function App() {
         value={zoom}
         onValueChange={setZoom}
       />
+
+      <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+        <Button title="1x" onPress={() => setZoom(Math.max(device.minZoom, 1))} />
+        <Button title="2x" onPress={() => setZoom(Math.min(Math.max(device.minZoom, 2), Math.min(device.maxZoom, 6)))} />
+        <Button title="3x" onPress={() => setZoom(Math.min(Math.max(device.minZoom, 3), Math.min(device.maxZoom, 6)))} />
+      </View>
 
       <Button
         title={photos.length < 3 ? `Take Shot ${photos.length + 1}/3` : 'Add More Shot'}
