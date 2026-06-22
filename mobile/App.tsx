@@ -1,11 +1,6 @@
 import { useRef, useState } from 'react';
 import { Button, Image, SafeAreaView, ScrollView, Text, View } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import {
-  Camera,
-  useCameraDevice,
-  useCameraPermission,
-} from 'react-native-vision-camera';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 
 
 function GridOverlay() {
@@ -86,13 +81,14 @@ function GridOverlay() {
 
 export default function App() {
   const cameraRef = useRef<any>(null);
-  const { hasPermission, requestPermission } = useCameraPermission();
-  const device = useCameraDevice('back');
+  const [permission, requestPermission] = useCameraPermissions();
 
   const [photos, setPhotos] = useState<string[]>([]);
   const [status, setStatus] = useState('Ready');
 
-  if (!hasPermission) {
+  if (!permission) return null;
+
+  if (!permission.granted) {
     return (
       <SafeAreaView style={{ flex: 1, justifyContent: 'center', padding: 20 }}>
         <Text style={{ textAlign: 'center', marginBottom: 20 }}>
@@ -103,36 +99,20 @@ export default function App() {
     );
   }
 
-  if (!device) {
-    return (
-      <SafeAreaView style={{ flex: 1, justifyContent: 'center', padding: 20 }}>
-        <Text>No back camera found.</Text>
-      </SafeAreaView>
-    );
-  }
-
   async function takePhoto() {
     try {
-      setStatus('Opening camera...');
+      setStatus('Taking photo...');
+      const photo = await cameraRef.current?.takePictureAsync({ quality: 1 });
 
-      const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 1,
-        allowsEditing: false,
-        exif: true,
-      });
-
-      if (result.canceled || !result.assets?.[0]?.uri) {
-        setStatus('Camera cancelled');
+      if (!photo?.uri) {
+        setStatus('No photo URI returned');
         return;
       }
 
-      const uri = result.assets[0].uri;
-      setPhotos((prev) => [...prev, uri]);
+      setPhotos((prev) => [...prev, photo.uri]);
       setStatus(`Saved shot ${photos.length + 1}`);
     } catch (err: any) {
       setStatus(`CAPTURE ERROR: ${err?.message || String(err)}`);
-      console.log('CAPTURE ERROR', err);
     }
   }
 
@@ -171,11 +151,10 @@ export default function App() {
       </Text>
 
       <View style={{ flex: 1 }}>
-        <Camera
+        <CameraView
           ref={cameraRef}
           style={{ flex: 1 }}
-          device={device}
-          isActive={true}
+          facing="back"
         />
         <GridOverlay />
       </View>
